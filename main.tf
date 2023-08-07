@@ -66,21 +66,34 @@ resource "kubernetes_service" "app" {
   }
 }
 
-resource "kubernetes_ingress" "app" {
+resource "kubernetes_ingress_v1" "app" {
   for_each = { for app in local.application_data.applications : app.name => app }
 
   metadata {
     name = "app-ingress-${each.value.name}"
+
+    annotations = merge(
+      {
+        "kubernetes.io/ingress.class" = "nginx",
+        "kubernetes.io/elb.port"     = "80"
+      },
+      each.value.annotations != null ? each.value.annotations : {}
+    )
   }
 
   spec {
+    ingress_class_name = "nginx"
     rule {
       http {
         path {
-          path     = "/"
+          path = "/"
           backend {
-            service_name = kubernetes_service.app[each.key].metadata[0].name
-            service_port = kubernetes_service.app[each.key].spec[0].port[0].port
+            service {
+              name = each.value.name
+              port {
+                number = each.value.port
+              }
+            }
           }
         }
       }
