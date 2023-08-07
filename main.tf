@@ -77,10 +77,9 @@ resource "kubernetes_ingress_v1" "app" {
         "kubernetes.io/ingress.class" = "nginx",
         "kubernetes.io/elb.port"     = "80"
       },
-      each.value.annotations != null ? each.value.annotations : {}
+      contains(keys(each.value), "annotations") ? each.value.annotations : {}
     )
   }
-
   spec {
     ingress_class_name = "nginx"
     rule {
