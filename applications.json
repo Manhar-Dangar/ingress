@@ -12,10 +12,8 @@
         "image": "hashicorp/http-echo",
         "args": ["-listen=:8081", "-text=I am green"],  
         "annotations": {
-          "kubernetes.io/ingress.class": "nginx",
           "nginx.ingress.kubernetes.io/canary": "true",
-          "nginx.ingress.kubernetes.io/canary-weight": "25",
-          "kubernetes.io/elb.port": "80"
+          "nginx.ingress.kubernetes.io/canary-weight": "25"
         },
         "port": 8081,
         "replicas": 3
